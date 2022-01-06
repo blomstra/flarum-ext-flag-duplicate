@@ -16,7 +16,7 @@ import ItemList from 'flarum/common/utils/ItemList';
 
 export default function extendFlagModal() {
   // https://github.com/flarum/flags/pull/39 is not available
-  if (FlagPostModal.prototype.flagReasons === 'undefined') {
+  if (!FlagPostModal.prototype.flagReasons) {
     extend(FlagPostModal.prototype, 'content', function (vnode: Mithril.Vnode) {
         if (this.attrs.post?.number() === 1) {
           findFirstVdomChild(vnode, '.Form-group', (vnode) => {
