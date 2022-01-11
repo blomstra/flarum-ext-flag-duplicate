@@ -11,6 +11,7 @@
 
 namespace Blomstra\FlagDuplicates;
 
+use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Extend;
 
 return [
@@ -19,4 +20,7 @@ return [
         ->css(__DIR__.'/less/forum.less'),
 
     new Extend\Locales(__DIR__.'/locale'),
+
+    (new Extend\ApiController(ShowDiscussionController::class))
+        ->addInclude(['firstPost']),
 ];

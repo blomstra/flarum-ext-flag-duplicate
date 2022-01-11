@@ -15,6 +15,7 @@ import ItemList from 'flarum/common/utils/ItemList';
 import Button from 'flarum/common/components/Button';
 import Stream from 'flarum/common/utils/Stream';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
 
 export default function extendFlagModal() {
   // https://github.com/flarum/flags/pull/39 is not available
@@ -150,5 +151,18 @@ export default function extendFlagModal() {
       });
       this.flagsLoading = false;
     }
+  });
+
+  extend(DiscussionControls, 'userControls', function (items: ItemList, discussion: Discussion) {
+    const post = discussion.firstPost();
+    if (!post || post.isHidden() || post.contentType() !== 'comment' || !post.canFlag()) return;
+
+    items.add(
+      'flag-dupe',
+      <Button icon="fas fa-flag" onclick={() => app.modal.show(FlagPostModal, { post })}>
+        {app.translator.trans('flarum-flags.forum.post_controls.flag_button')}
+      </Button>,
+      0
+    );
   });
 }
