@@ -80,6 +80,11 @@ export default function extendFlagModal() {
     }
   });
 
+  // Only required until https://github.com/flarum/core/pull/3260 is merged.
+  extend(FlagPostModal.prototype, ['oncreate', 'onupdate'], function() {
+    this.$('.Search-clear').attr('type', 'button');
+  });
+
   extend(Post.prototype, 'flagActionItems', function (items: ItemList) {
     const flags = this.attrs.post?.flags?.();
 
