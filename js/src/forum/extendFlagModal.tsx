@@ -100,16 +100,26 @@ export default function extendFlagModal() {
     }
   });
 
-  extend(Post.prototype, 'oninit', function (this: Post, vnode: Mithril.Vnode) {
+  extend(Post.prototype, 'oninit', function (this: Post) {
+    this.subtree?.check(() => this.dupeDiscussion?.freshness);
+  });
+
+  extend(Post.prototype, ['oninit', 'onupdate'], function (this: Post, vnode: Mithril.Vnode) {
     const flags = this.attrs.post?.flags?.();
 
     if (flags) {
       this.flagsLoading = true;
       flags.map((flag: Flag) => {
         if (flag?.reason?.() === 'duplicate') {
-          app.store.find('discussions', flag.reasonDetail()).then((discussion: Discussion) => {
-            this.dupeDiscussion = discussion;
-          });
+          const inStoreDiscussion = app.store.getById('discussion', flag.reasonDetail());
+
+          if (inStoreDiscussion) {
+            this.dupeDiscussion = inStoreDiscussion;
+          } else {
+            app.store.find('discussions', flag.reasonDetail()).then((discussion: Discussion) => {
+              this.dupeDiscussion = discussion;
+            });
+          }
         }
       });
       this.flagsLoading = false;
