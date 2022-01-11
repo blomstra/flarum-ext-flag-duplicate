@@ -2,87 +2,45 @@ import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import FlagPostModal from 'flarum/flags/forum/components/FlagPostModal';
 import { findFirstVdomChild } from './utils/findVdomChild';
-import withAttr from 'flarum/common/utils/withAttr';
 import Post from 'flarum/forum/components/Post';
 import Link from 'flarum/common/components/Link';
 import type Mithril from 'mithril';
 import icon from 'flarum/common/helpers/icon';
 import { components } from '@fof-merge-discussions';
-import GlobalSearchState from 'flarum/forum/states/GlobalSearchState';
 import Discussion from 'flarum/common/models/Discussion';
 import Flag from 'flarum/flags/forum/models/flag';
 import ItemList from 'flarum/common/utils/ItemList';
 import Button from 'flarum/common/components/Button';
-import Stream from 'flarum/common/utils/Stream';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
+import DiscussionSearch from './components/DiscussionSearch';
 
 export default function extendFlagModal() {
   // https://github.com/flarum/flags/pull/39 is not available
   if (!FlagPostModal.prototype.flagReasons) {
-    extend(FlagPostModal.prototype, 'content', function (vnode: Mithril.Vnode) {
+    extend(FlagPostModal.prototype, 'content', function (this: FlagPostModal, vnode: Mithril.Vnode) {
       if (this.attrs.post?.number() === 1) {
         findFirstVdomChild(vnode, '.Form-group', (vnode) => {
           const discussion = this.attrs.post.discussion();
-          this.search = new GlobalSearchState();
 
-          vnode.children[0].children.splice(
-            0,
-            0,
-            <label className="checkbox">
-              <input type="radio" name="reason" checked={this.reason() === 'duplicate'} value="duplicate" onclick={withAttr('value', this.reason)} />
-              <strong>{app.translator.trans('blomstra-flag-duplicates.forum.flags.reason_duplicate_label')}</strong>
-              {app.translator.trans('blomstra-flag-duplicates.forum.flags.reason_duplicate_text')}
-              {this.reason() === 'duplicate' ? (
-                <components.DiscussionSearch
-                  state={this.search}
-                  onSelect={((discussion: Discussion) => {
-                    this.reasonDetail = Stream(discussion.id());
-                  }).bind(this)}
-                  ignore={discussion.id()}
-                />
-              ) : (
-                ''
-              )}
-            </label>
-          );
+          vnode.children[0].children.splice(0, 0, <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />);
         });
+      }
+    });
+  } else {
+    extend(FlagPostModal.prototype, 'flagReasons', function (this: FlagPostModal, items: ItemList<Mithril.Children>) {
+      if (this.attrs.post?.number() === 1) {
+        const discussion = this.attrs.post.discussion();
+
+        items.add('duplicate', <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />, 100);
       }
     });
   }
 
-  // Requires https://github.com/flarum/flags/pull/39
-  extend(FlagPostModal.prototype, 'flagReasons', function (items: ItemList) {
-    if (this.attrs.post?.number() === 1) {
-      const discussion = this.attrs.post.discussion();
-      this.search = new GlobalSearchState();
-
-      items.add(
-        'duplicate',
-        <label className="checkbox">
-          <input type="radio" name="reason" checked={this.reason() === 'duplicate'} value="duplicate" onclick={withAttr('value', this.reason)} />
-          <strong>{app.translator.trans('blomstra-flag-duplicates.forum.flags.reason_duplicate_label')}</strong>
-          {app.translator.trans('blomstra-flag-duplicates.forum.flags.reason_duplicate_text')}
-          {this.reason() === 'duplicate' ? (
-            <components.DiscussionSearch
-              state={this.search}
-              onSelect={((discussion: Discussion) => {
-                this.reasonDetail = Stream(discussion.id());
-              }).bind(this)}
-              ignore={discussion.id()}
-            />
-          ) : (
-            ''
-          )}
-        </label>,
-        100
-      );
-    }
-  });
-
   // Only required until https://github.com/flarum/core/pull/3260 is merged.
   extend(FlagPostModal.prototype, ['oncreate', 'onupdate'], function () {
     this.$('.Search-clear').attr('type', 'button');
+    this.$('.Button[type=submit]').prop('disabled', (this.reason() === 'duplicate' && !this.reasonDetail()) || !this.reason());
   });
 
   extend(Post.prototype, 'flagActionItems', function (items: ItemList) {
@@ -99,7 +57,7 @@ export default function extendFlagModal() {
           <Button
             className="Button"
             icon="fas fa-code-branch fa-flip-vertical"
-            disabled={!!!this.dupeDiscussion}
+            disabled={!this.dupeDiscussion}
             onclick={() => {
               app.modal.show(components.DiscussionMergeModal, { discussion, preselect: this.dupeDiscussion });
             }}

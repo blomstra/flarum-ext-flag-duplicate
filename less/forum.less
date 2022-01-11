@@ -30,4 +30,25 @@
     left: 0;
     position: relative;
   }
+
+  .FlagPostModal-SelectedDuplicate {
+    .Button {
+      height: unset;
+      padding: 8px 0;
+      width: 36px;
+      font-size: inherit;
+      margin-right: 8px;
+      vertical-align: middle;
+
+      + span {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  // Hide apropriate sections when a result is/isn't selected
+  &-DuplicateSearch {
+    &[data-result-selected] .Search {display: none;}
+    &:not([data-result-selected]) .FlagPostModal-SelectedDuplicate {display: none;}
+  }
 }
