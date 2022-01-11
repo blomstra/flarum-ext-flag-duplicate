@@ -9,7 +9,7 @@
     "require": {
         "flarum/core": "^1.1.0",
         "flarum/flags": "*",
-        "fof/merge-discussions": "^1.1.2"
+        "fof/merge-discussions": "^1.1.3"
     },
     "authors": [
         {
