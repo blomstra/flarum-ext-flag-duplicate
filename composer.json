@@ -2,7 +2,7 @@
     "name": "blomstra/flag-duplicates",
     "description": "Allow users to flag duplicate discussions",
     "keywords": [
-        "flarum"
+        "flarum", "flag", "duplicate"
     ],
     "type": "flarum-extension",
     "license": "MIT",
@@ -11,6 +11,7 @@
         "flarum/flags": "*",
         "fof/merge-discussions": "^1.1.3"
     },
+    "homepage": "https://blomstra.net",
     "authors": [
         {
             "name": "IanM",
