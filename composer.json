@@ -14,7 +14,8 @@
     "homepage": "https://blomstra.net",
     "support": {
         "issues": "https://github.com/blomstra/flarum-ext-flag-duplicate/issues",
-        "source": "https://github.com/blomstra/flarum-ext-flag-duplicate"
+        "source": "https://github.com/blomstra/flarum-ext-flag-duplicate",
+        "forum": "https://discuss.flarum.org/d/29825"
     },
     "authors": [
         {

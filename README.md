@@ -35,4 +35,4 @@ The initial implementation of this extension was sponsored by [Kagi Search](http
 
 - [Packagist](https://packagist.org/packages/blomstra/flag-duplicates)
 - [GitHub](https://github.com/blomstra/flarum-ext-flag-duplicate)
-- [Discuss](https://discuss.flarum.org/d/PUT_DISCUSS_SLUG_HERE)
+- [Discuss](https://discuss.flarum.org/d/29825)
