@@ -86,11 +86,18 @@ export default function extendFlagModal() {
     flags.map((flag: Flag) => {
       if (flag?.reason?.() === 'duplicate') {
         const discussion = this.attrs.post.discussion();
-        
+
         items.remove('controls');
         items.add(
           'merge',
-          <Button className="Button" icon="fas fa-code-branch fa-flip-vertical" disabled={!!!this.dupeDiscussion} onclick={() => {app.modal.show(components.DiscussionMergeModal, { discussion, preselect: this.dupeDiscussion })}}>
+          <Button
+            className="Button"
+            icon="fas fa-code-branch fa-flip-vertical"
+            disabled={!!!this.dupeDiscussion}
+            onclick={() => {
+              app.modal.show(components.DiscussionMergeModal, { discussion, preselect: this.dupeDiscussion });
+            }}
+          >
             {app.translator.trans('fof-merge-discussions.forum.discussion.merge')}
           </Button>,
           5
@@ -105,8 +112,8 @@ export default function extendFlagModal() {
     if (flag?.reason?.() === 'duplicate') {
       if (this.flagsLoading || !this.dupeDiscussion) {
         orig[1] = (
-          <span className='Post-flagged-detail'>
-            <LoadingIndicator size='small' display='inline'/>
+          <span className="Post-flagged-detail">
+            <LoadingIndicator size="small" display="inline" />
           </span>
         );
 
@@ -118,7 +125,8 @@ export default function extendFlagModal() {
       orig[1] = (
         <span className="Post-flagged-detail">
           <Link href={url} external={true} target="_blank">
-            {this.dupeDiscussion.title() || app.translator.trans('blomstra-flag-duplicates.forum.flags.duplicate_discussion')} {icon('fas fa-external-link-alt')}{' '}
+            {this.dupeDiscussion.title() || app.translator.trans('blomstra-flag-duplicates.forum.flags.duplicate_discussion')}{' '}
+            {icon('fas fa-external-link-alt')}{' '}
           </Link>
         </span>
       );
@@ -128,9 +136,9 @@ export default function extendFlagModal() {
     }
   });
 
-  extend(Post.prototype, 'oninit', function(this: Post, vnode: Mithril.Vnode) {
+  extend(Post.prototype, 'oninit', function (this: Post, vnode: Mithril.Vnode) {
     const flags = this.attrs.post?.flags?.();
-    
+
     if (flags) {
       this.flagsLoading = true;
       flags.map((flag: Flag) => {
@@ -142,5 +150,5 @@ export default function extendFlagModal() {
       });
       this.flagsLoading = false;
     }
-  })
+  });
 }
