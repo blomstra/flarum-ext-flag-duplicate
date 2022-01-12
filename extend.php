@@ -13,6 +13,7 @@ namespace Blomstra\FlagDuplicates;
 
 use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Extend;
+use FoF\MergeDiscussions\Events\DiscussionWasMerged;
 
 return [
     (new Extend\Frontend('forum'))
@@ -23,4 +24,7 @@ return [
 
     (new Extend\ApiController(ShowDiscussionController::class))
         ->addInclude(['firstPost']),
+
+    (new Extend\Event())
+        ->listen(DiscussionWasMerged::class, Listener\RemoveDuplicateFlagAfterMerge::class),
 ];
