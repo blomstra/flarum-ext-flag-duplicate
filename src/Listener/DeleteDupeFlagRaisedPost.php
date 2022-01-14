@@ -27,7 +27,9 @@ class DeleteDupeFlagRaisedPost
 
             $eventPost = Post::where('discussion_id', $discussion->id)->where('type', 'discussionFlaggedDuplicate')->first();
 
-            $eventPost->delete();
+            if ($eventPost) {
+                $eventPost->delete();
+            }
         }
     }
 }
