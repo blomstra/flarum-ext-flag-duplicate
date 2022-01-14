@@ -13,21 +13,10 @@ namespace Blomstra\FlagDuplicates\Listener;
 
 use Flarum\Flags\Event\Deleting;
 use Flarum\Post\Post;
-use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Support\Arr;
 
 class DeleteDupeFlagRaisedPost
 {
-    /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    public function __construct(SettingsRepositoryInterface $settings)
-    {
-        $this->settings = $settings;
-    }
-
     public function handle(Deleting $event)
     {
         $flag = $event->flag;
