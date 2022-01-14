@@ -25,9 +25,10 @@ class DeleteDupeFlagRaisedPost
             $flaggedPost = $flag->post;
             $discussion = $flaggedPost->discussion;
 
-            $eventPost = Post::where('discussion_id', $discussion->id)->where('type', 'discussionFlaggedDuplicate')->first();
+            $eventPosts = Post::where('discussion_id', $discussion->id)->where('type', 'discussionFlaggedDuplicate')->get();
 
-            if ($eventPost) {
+            foreach ($eventPosts as $eventPost) {
+                /** @var Post $eventPost */
                 $eventPost->delete();
             }
         }
