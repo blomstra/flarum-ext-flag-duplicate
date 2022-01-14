@@ -13,7 +13,6 @@ namespace Blomstra\FlagDuplicates\Listener;
 
 use Flarum\Flags\Event\Deleting;
 use Flarum\Flags\Flag;
-use Flarum\Post\Post;
 use FoF\MergeDiscussions\Events\DiscussionWasMerged;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,7 +30,7 @@ class RemoveDuplicateFlagAfterMerge
     public function handle(DiscussionWasMerged $event)
     {
         $discussion = $event->discussion;
-        
+
         $mergedDiscussions = $event->mergedDiscussions;
         $mergedDiscussionIds = $mergedDiscussions->pluck('id')->toArray();
 

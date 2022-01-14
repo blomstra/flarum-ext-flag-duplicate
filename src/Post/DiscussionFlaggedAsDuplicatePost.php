@@ -55,11 +55,12 @@ class DiscussionFlaggedAsDuplicatePost extends AbstractEventPost implements Merg
      * @param int $discussionId
      * @param int $userId
      * @param int $duplicateDiscussionId
+     *
      * @return static
      */
     public static function reply($discussionId, $userId, $duplicateDiscussionId)
     {
-        $post = new static;
+        $post = new static();
 
         $post->content = $duplicateDiscussionId;
         $post->created_at = time();
@@ -74,6 +75,7 @@ class DiscussionFlaggedAsDuplicatePost extends AbstractEventPost implements Merg
      *
      * @param array $oldTagIds
      * @param array $newTagIds
+     *
      * @return array
      */
     // public static function buildContent(array $oldTagIds, array $newTagIds)

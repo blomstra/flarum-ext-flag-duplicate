@@ -22,12 +22,12 @@ class DeleteDupeFlagRaisedPost
      * @var SettingsRepositoryInterface
      */
     protected $settings;
-    
+
     public function __construct(SettingsRepositoryInterface $settings)
     {
         $this->settings = $settings;
     }
-    
+
     public function handle(Deleting $event)
     {
         $flag = $event->flag;

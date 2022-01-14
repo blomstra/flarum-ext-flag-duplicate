@@ -21,12 +21,12 @@ class CreateDupeFlagRaisedPost
      * @var SettingsRepositoryInterface
      */
     protected $settings;
-    
+
     public function __construct(SettingsRepositoryInterface $settings)
     {
         $this->settings = $settings;
     }
-    
+
     public function handle(Created $event)
     {
         $flag = $event->flag;
