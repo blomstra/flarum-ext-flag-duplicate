@@ -31,18 +31,21 @@ class RemoveDuplicateFlagAfterMerge
     {
         $discussion = $event->discussion;
 
+        $mergedDiscussions = $event->mergedDiscussions;
+        $mergedDiscussionIds = $mergedDiscussions->pluck('id')->toArray();
+
         /** @var array $postIds */
         $postIds = $discussion->posts->pluck('id');
 
         /** @var Collection $flags */
-        $flags = Flag::where('reason', 'duplicate')->whereIn('post_id', $postIds)->where('reason_detail', $discussion->id)->get();
+        $flags = Flag::where('reason', 'duplicate')->whereIn('post_id', $postIds)->whereIn('reason_detail', array_merge([$discussion->id], $mergedDiscussionIds))->get();
 
         foreach ($flags as $flag) {
             /** @var Flag $flag */
-            $this->events->dispatch(new Deleting($flag, $event->actor));
+            $this->events->dispatch(new Deleting($flag, $event->actor, ['duplicateMerge' => true]));
             $flag->delete();
         }
 
-        $discussion->refresh();
+        $discussion->refresh()->with('posts');
     }
 }

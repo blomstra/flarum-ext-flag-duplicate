@@ -19,26 +19,28 @@ export default function extendFlagModal() {
   // https://github.com/flarum/flags/pull/39 is not available
   if (!FlagPostModal.prototype.flagReasons) {
     extend(FlagPostModal.prototype, 'content', function (this: FlagPostModal, vnode: Mithril.Vnode) {
-      if (this.attrs.post?.number() === 1) {
-        findFirstVdomChild(vnode, '.Form-group', (vnode) => {
-          const discussion = this.attrs.post.discussion();
+      if (this.attrs.post?.number() !== 1 || this.success) return;
 
-          vnode.children[0].children.splice(0, 0, <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />);
-        });
-      }
+      findFirstVdomChild(vnode, '.Form-group', (vnode) => {
+        const discussion = this.attrs.post.discussion();
+
+        vnode.children[0].children.splice(0, 0, <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />);
+      });
     });
   } else {
     extend(FlagPostModal.prototype, 'flagReasons', function (this: FlagPostModal, items: ItemList<Mithril.Children>) {
-      if (this.attrs.post?.number() === 1) {
-        const discussion = this.attrs.post.discussion();
+      if (this.attrs.post?.number() !== 1 || this.success) return;
 
-        items.add('duplicate', <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />, 100);
-      }
+      const discussion = this.attrs.post.discussion();
+
+      items.add('duplicate', <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />, 100);
     });
   }
 
   // Only required until https://github.com/flarum/core/pull/3260 is merged.
   extend(FlagPostModal.prototype, ['oncreate', 'onupdate'], function () {
+    if (this.attrs.post?.number() !== 1) return;
+
     this.$('.Search-clear').attr('type', 'button');
     this.$('.Button[type=submit]').prop('disabled', (this.reason() === 'duplicate' && !this.reasonDetail()) || !this.reason());
   });
