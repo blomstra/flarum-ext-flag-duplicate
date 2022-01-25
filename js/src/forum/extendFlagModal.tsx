@@ -1,7 +1,6 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import FlagPostModal from 'flarum/flags/forum/components/FlagPostModal';
-import { findFirstVdomChild } from './utils/findVdomChild';
 import Post from 'flarum/forum/components/Post';
 import Link from 'flarum/common/components/Link';
 import type Mithril from 'mithril';
@@ -16,26 +15,13 @@ import DiscussionControls from 'flarum/forum/utils/DiscussionControls';
 import DiscussionSearch from './components/DiscussionSearch';
 
 export default function extendFlagModal() {
-  // https://github.com/flarum/flags/pull/39 is not available
-  if (!FlagPostModal.prototype.flagReasons) {
-    extend(FlagPostModal.prototype, 'content', function (this: FlagPostModal, vnode: Mithril.Vnode) {
-      if (this.attrs.post?.number() !== 1 || this.success) return;
+  extend(FlagPostModal.prototype, 'flagReasons', function (this: FlagPostModal, items: ItemList<Mithril.Children>) {
+    if (this.attrs.post?.number() !== 1 || this.success) return;
 
-      findFirstVdomChild(vnode, '.Form-group', (vnode) => {
-        const discussion = this.attrs.post.discussion();
+    const discussion = this.attrs.post.discussion();
 
-        vnode.children[0].children.splice(0, 0, <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />);
-      });
-    });
-  } else {
-    extend(FlagPostModal.prototype, 'flagReasons', function (this: FlagPostModal, items: ItemList<Mithril.Children>) {
-      if (this.attrs.post?.number() !== 1 || this.success) return;
-
-      const discussion = this.attrs.post.discussion();
-
-      items.add('duplicate', <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />, 100);
-    });
-  }
+    items.add('duplicate', <DiscussionSearch discussion={discussion} reason={this.reason} reasonDetail={this.reasonDetail} />, 100);
+  });
 
   // Only required until https://github.com/flarum/core/pull/3260 is merged.
   extend(FlagPostModal.prototype, ['oncreate', 'onupdate'], function () {
