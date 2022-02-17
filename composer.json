@@ -2,7 +2,9 @@
     "name": "blomstra/flag-duplicates",
     "description": "Allow users to flag duplicate discussions",
     "keywords": [
-        "flarum", "flag", "duplicate"
+        "flarum",
+        "flag",
+        "duplicate"
     ],
     "type": "flarum-extension",
     "license": "MIT",
@@ -19,8 +21,8 @@
     },
     "authors": [
         {
-            "name": "IanM",
-            "email": "ian@blomstra.net",
+            "name": "Team Blomstra",
+            "email": "development@blomstra.net",
             "role": "Developer"
         }
     ],
