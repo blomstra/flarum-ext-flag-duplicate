@@ -23,6 +23,8 @@ export default class DiscussionFlaggedDuplicatePost extends EventPost {
 
     data.duplicate = this.dupe ? (
       <Link href={app.route.discussion(this.dupe)}>{this.dupe.title()}</Link>
+    ) : this.dupeFail ? (
+      <code>{app.translator.trans('blomstra-flag-duplicates.forum.post_stream.not_found')}</code>
     ) : (
       <LoadingIndicator size="small" display="inline" />
     );
@@ -32,10 +34,15 @@ export default class DiscussionFlaggedDuplicatePost extends EventPost {
 
   loadDupe() {
     const dupeId = this.attrs.post.content();
-    app.store.find('discussions', dupeId).then((discussion) => {
-      this.dupe = discussion;
+    app.store
+      .find('discussions', dupeId)
+      .then((discussion) => {
+        this.dupe = discussion;
 
-      m.redraw();
-    });
+        m.redraw();
+      })
+      .catch((e) => {
+        this.dupeFail = true;
+      });
   }
 }
