@@ -31,37 +31,45 @@ export default function extendFlagModal() {
     this.$('.Button[type=submit]').prop('disabled', (this.reason() === 'duplicate' && !this.reasonDetail()) || !this.reason());
   });
 
-  extend(Post.prototype, 'flagActionItems', function (items: ItemList) {
+  extend(Post.prototype, 'flagActionItems', function (items: ItemList<Mithril.Children>) {
     const flags = this.attrs.post?.flags?.();
 
     // If (at least) one of the flags here is `duplicate`, then we'll remove the `Delete` button and replace it with a `Merge` button.
-    flags.map((flag: Flag) => {
-      if (flag?.reason?.() === 'duplicate') {
-        const discussion = this.attrs.post.discussion();
+    if (flags.some((flag: Flag) => flag?.reason?.() === 'duplicate')) {
+      const discussion = this.attrs.post.discussion();
 
-        items.remove('controls');
-        items.add(
-          'merge',
-          <Button
-            className="Button"
-            icon="fas fa-code-branch fa-flip-vertical"
-            disabled={!this.dupeDiscussion}
-            onclick={() => {
-              app.modal.show(components.DiscussionMergeModal, { discussion, preselect: this.dupeDiscussion });
-            }}
-          >
-            {app.translator.trans('fof-merge-discussions.forum.discussion.merge')}
-          </Button>,
-          5
-        );
-      }
-    });
+      items.remove('controls');
+      items.add(
+        'merge',
+        <Button
+          className="Button"
+          icon="fas fa-code-branch fa-flip-vertical"
+          disabled={!this.dupeDiscussion}
+          onclick={() => {
+            app.modal.show(components.DiscussionMergeModal, { discussion, preselect: this.dupeDiscussion });
+          }}
+        >
+          {app.translator.trans('fof-merge-discussions.forum.discussion.merge')}
+        </Button>,
+        5
+      );
+    }
   });
 
   override(Post.prototype, 'flagReason', function (original, flag: Flag) {
     const orig = original(flag);
 
+    console.log(this.dupeDiscussion);
+
     if (flag?.reason?.() === 'duplicate') {
+      if (this.dupeDiscussion === null) {
+        orig[1] = (
+          <span className="Post-flagged-detail">{app.translator.trans('blomstra-flag-duplicates.forum.flags.reason_discussion_deleted')}</span>
+        );
+
+        return orig;
+      }
+
       if (this.flagsLoading || !this.dupeDiscussion) {
         orig[1] = (
           <span className="Post-flagged-detail">
@@ -89,7 +97,10 @@ export default function extendFlagModal() {
   });
 
   extend(Post.prototype, 'oninit', function (this: Post) {
-    this.subtree?.check(() => this.dupeDiscussion?.freshness);
+    this.subtree?.check(
+      () => this.dupeDiscussion?.freshness,
+      () => this.dupeDiscussion
+    );
   });
 
   extend(Post.prototype, ['oninit', 'onupdate'], function (this: Post, vnode: Mithril.Vnode) {
@@ -97,6 +108,7 @@ export default function extendFlagModal() {
 
     if (flags) {
       this.flagsLoading = true;
+
       flags.map((flag: Flag) => {
         if (flag?.reason?.() === 'duplicate') {
           const inStoreDiscussion = app.store.getById('discussion', flag.reasonDetail());
@@ -104,9 +116,22 @@ export default function extendFlagModal() {
           if (inStoreDiscussion) {
             this.dupeDiscussion = inStoreDiscussion;
           } else {
-            app.store.find('discussions', flag.reasonDetail()).then((discussion: Discussion) => {
-              this.dupeDiscussion = discussion;
-            });
+            app.store
+              .find<Discussion>(
+                'discussions',
+                flag.reasonDetail(),
+                {},
+                {
+                  errorHandler: () => {
+                    this.dupeDiscussion = null;
+                    m.redraw();
+                  },
+                }
+              )
+              .then((discussion: Discussion) => {
+                this.dupeDiscussion = discussion;
+                m.redraw();
+              });
           }
         }
       });
@@ -114,7 +139,7 @@ export default function extendFlagModal() {
     }
   });
 
-  extend(DiscussionControls, 'userControls', function (items: ItemList, discussion: Discussion) {
+  extend(DiscussionControls, 'userControls', function (items: ItemList<Mithril.Children>, discussion: Discussion) {
     const post = discussion.firstPost();
     if (!post || post.isHidden() || post.contentType() !== 'comment' || !post.canFlag()) return;
 

@@ -1,11 +1,20 @@
 import app from 'flarum/forum/app';
-import EventPost from 'flarum/components/EventPost';
+import EventPost from 'flarum/forum/components/EventPost';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Link from 'flarum/common/components/Link';
 
 export default class DiscussionFlaggedDuplicatePost extends EventPost {
   oninit(vnode) {
     super.oninit(vnode);
+
+    this.subtree.check(
+      () => this.dupe?.freshness,
+      () => this.dupeFail
+    );
+  }
+
+  oncreate(vnode) {
+    super.oncreate(vnode);
 
     this.loadDupe();
   }
@@ -24,7 +33,7 @@ export default class DiscussionFlaggedDuplicatePost extends EventPost {
     data.duplicate = this.dupe ? (
       <Link href={app.route.discussion(this.dupe)}>{this.dupe.title()}</Link>
     ) : this.dupeFail ? (
-      <code>{app.translator.trans('blomstra-flag-duplicates.forum.post_stream.not_found')}</code>
+      <code>{app.translator.trans('blomstra-flag-duplicates.forum.post_stream.deleted_discussion')}</code>
     ) : (
       <LoadingIndicator size="small" display="inline" />
     );
@@ -32,17 +41,25 @@ export default class DiscussionFlaggedDuplicatePost extends EventPost {
     return data;
   }
 
-  loadDupe() {
+  async loadDupe() {
     const dupeId = this.attrs.post.content();
-    app.store
-      .find('discussions', dupeId)
-      .then((discussion) => {
-        this.dupe = discussion;
 
-        m.redraw();
-      })
-      .catch((e) => {
-        this.dupeFail = true;
-      });
+    try {
+      this.dupe = await app.store.find(
+        'discussions',
+        dupeId,
+        {},
+        {
+          errorHandler: () => {
+            this.dupeFail = true;
+            m.redraw();
+          },
+        }
+      );
+    } catch {
+      this.dupeFail = true;
+    }
+
+    m.redraw();
   }
 }
