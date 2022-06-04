@@ -27,23 +27,6 @@ class DiscussionFlaggedAsDuplicatePost extends AbstractEventPost implements Merg
      */
     public function saveAfter(Post $previous = null)
     {
-        // If the previous post is another 'discussion flagged dupe' post, and it's
-        // by the same user, then we can merge this post into it. If we find
-        // that we've in fact reverted the tag changes, delete it. Otherwise,
-        // update its content.
-        if ($previous instanceof static && $this->user_id === $previous->user_id) {
-            if ($previous->content == $this->content) {
-                $previous->delete();
-            } else {
-                $previous->content = static::buildContent($previous->content[0], $this->content[1]);
-                $previous->created_at = $this->created_at;
-
-                $previous->save();
-            }
-
-            return $previous;
-        }
-
         $this->save();
 
         return $this;
