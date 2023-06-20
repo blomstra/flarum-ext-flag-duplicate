@@ -12,7 +12,6 @@
 namespace Blomstra\FlagDuplicates;
 
 use Blomstra\FlagDuplicates\Post\DiscussionFlaggedAsDuplicatePost;
-use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Extend;
 use Flarum\Flags\Event\Created as FlagCreated;
 use Flarum\Flags\Event\Deleting as FlagDeleting;
@@ -27,9 +26,6 @@ return [
         ->js(__DIR__.'/js/dist/admin.js'),
 
     new Extend\Locales(__DIR__.'/locale'),
-
-    (new Extend\ApiController(ShowDiscussionController::class))
-        ->addInclude(['firstPost']),
 
     (new Extend\Event())
         ->listen(DiscussionWasMerged::class, Listener\RemoveDuplicateFlagAfterMerge::class)
