@@ -12,6 +12,7 @@
 namespace Blomstra\FlagDuplicates;
 
 use Blomstra\FlagDuplicates\Post\DiscussionFlaggedAsDuplicatePost;
+use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Extend;
 use Flarum\Flags\Event\Created as FlagCreated;
 use Flarum\Flags\Event\Deleting as FlagDeleting;
@@ -34,4 +35,7 @@ return [
 
     (new Extend\Post())
         ->type(DiscussionFlaggedAsDuplicatePost::class),
+
+    (new Extend\ApiController(ShowDiscussionController::class))
+        ->addInclude('firstPost'),
 ];
