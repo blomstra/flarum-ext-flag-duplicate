@@ -7,7 +7,7 @@ import type Mithril from 'mithril';
 import icon from 'flarum/common/helpers/icon';
 import { components } from '@fof-merge-discussions';
 import Discussion from 'flarum/common/models/Discussion';
-import Flag from 'flarum/flags/forum/models/flag';
+import Flag from 'flarum/flags/forum/models/Flag';
 import ItemList from 'flarum/common/utils/ItemList';
 import Button from 'flarum/common/components/Button';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
