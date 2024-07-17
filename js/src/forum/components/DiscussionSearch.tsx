@@ -55,11 +55,15 @@ export default class DiscussionSearch extends Component<IAttrs, IState> {
             <components.DiscussionSearch
               state={this.search}
               onSelect={((discussion: Discussion) => {
+                if (! discussion) {
+                  return;
+                }
+
                 this.state.selectedDiscussion = discussion;
                 this.attrs.reasonDetail(discussion.id());
                 m.redraw();
               }).bind(this)}
-              ignore={discussion && discussion.id()}
+              ignore={discussion ? discussion.id() : null}
             />
 
             <div class="FlagPostModal-SelectedDuplicate">
