@@ -37,6 +37,7 @@ export default class DiscussionSearch extends Component<IAttrs, IState> {
     const discussion = this.attrs.discussion;
     this.search = new GlobalSearchState();
 
+
     return (
       <label className="checkbox">
         <input
@@ -58,7 +59,7 @@ export default class DiscussionSearch extends Component<IAttrs, IState> {
                 this.attrs.reasonDetail(discussion.id());
                 m.redraw();
               }).bind(this)}
-              ignore={discussion.id()}
+              ignore={discussion && discussion.id()}
             />
 
             <div class="FlagPostModal-SelectedDuplicate">
