@@ -141,7 +141,7 @@ export default function extendFlagModal() {
 
   extend(DiscussionControls, 'userControls', function (items: ItemList<Mithril.Children>, discussion: Discussion) {
     const post = discussion.firstPost();
-    if (!post || post.isHidden() || post.contentType() !== 'comment' || !post.canFlag()) return;
+    if (!post || post.isHidden() || post.contentType() !== 'comment' || !discussion.canFlagDuplicate()) return;
 
     items.add(
       'flag-dupe',
