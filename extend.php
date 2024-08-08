@@ -12,7 +12,9 @@
 namespace Blomstra\FlagDuplicates;
 
 use Blomstra\FlagDuplicates\Post\DiscussionFlaggedAsDuplicatePost;
+use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Api\Controller\ShowDiscussionController;
+use Flarum\Api\Serializer\DiscussionSerializer;
 use Flarum\Extend;
 use Flarum\Flags\Event\Created as FlagCreated;
 use Flarum\Flags\Event\Deleting as FlagDeleting;
@@ -38,4 +40,7 @@ return [
 
     (new Extend\ApiController(ShowDiscussionController::class))
         ->addInclude('firstPost'),
+
+    (new Extend\ApiSerializer(DiscussionSerializer::class))
+        ->attribute('canFlagDuplicate', Api\AddCanFlagDuplicateAttribute::class),
 ];
