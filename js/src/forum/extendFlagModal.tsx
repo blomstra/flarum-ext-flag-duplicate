@@ -111,7 +111,7 @@ export default function extendFlagModal() {
 
       flags.map((flag: Flag) => {
         if (flag?.reason?.() === 'duplicate') {
-          const inStoreDiscussion = app.store.getById('discussion', flag.reasonDetail());
+          const inStoreDiscussion = app.store.getById('discussions', flag.reasonDetail());
 
           if (inStoreDiscussion) {
             this.dupeDiscussion = inStoreDiscussion;
