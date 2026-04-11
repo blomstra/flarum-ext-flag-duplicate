@@ -18,6 +18,8 @@ class AddCanFlagDuplicateAttribute
 
     public function __invoke(DiscussionSerializer $serializer, Discussion $discussion): bool
     {
+        if (! $discussion->firstPost) return false;
+        
         $this->postSerializer->setRequest($serializer->getRequest());
 
         $gate = $this->gate;
